@@ -79,7 +79,6 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # For local development
-    "192.168.52.30:5173"
 ]
 
 ROOT_URLCONF = 'OffWorldMedia.urls'
