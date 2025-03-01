@@ -1,0 +1,29 @@
+.login-container {
+    background: linear-gradient(135deg, #ff4d4d, #4d79ff);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .login-card {
+    width: 50%;
+    height: 50%;
+    border: none;
+    text-align: center;
+    background: #fff;
+    border-radius: 10px;
+  }
+  
+  .register-link {
+    color: #038f4d;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .register-link:hover {
+    text-decoration: underline;
+  }
+  

@@ -1,0 +1,20 @@
+.register-container {
+    background: linear-gradient(135deg, #ff4d4d, #4d79ff);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .login-link {
+    color: #038f4d;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .login-link:hover {
+    text-decoration: underline;
+  }
+  
