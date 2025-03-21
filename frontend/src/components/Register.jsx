@@ -1,15 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
-import {
-  Container,
-  Card,
-  Form,
-  Row,
-  Col,
-  Button,
-  Modal,
-} from "react-bootstrap";
+import { Container, Card, Form, Row, Col, Button, Modal } from "react-bootstrap";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -58,18 +50,13 @@ const Register = () => {
       });
       setShowSuccessModal(true);
     } catch (error) {
-      setErrorMessage(
-        error.response?.data || "Registration failed. Please try again."
-      );
+      setErrorMessage(error.response?.data || "Registration failed. Please try again.");
       setShowFailureModal(true);
     }
   };
 
   return (
-    <Container
-      fluid
-      className="d-flex justify-content-center align-items-center register-container"
-    >
+    <Container fluid className="d-flex justify-content-center align-items-center register-container">
       <Card className="p-4 shadow-sm" style={{ width: "500px" }}>
         <Card.Body>
           <h3 className="text-center mb-4">Create an Account</h3>
@@ -212,20 +199,15 @@ const Register = () => {
       </Modal>
 
       {/* Failure Modal */}
-      <Modal
-        show={showFailureModal}
-        onHide={() => setShowFailureModal(false)}
-        centered
-      >
+      <Modal show={showFailureModal} onHide={() => setShowFailureModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Registration Failed</Modal.Title>
         </Modal.Header>
-        <Modal.Body>{errorMessage}</Modal.Body>
+        <Modal.Body>
+          {errorMessage}
+        </Modal.Body>
         <Modal.Footer>
-          <Button
-            variant="secondary"
-            onClick={() => setShowFailureModal(false)}
-          >
+          <Button variant="secondary" onClick={() => setShowFailureModal(false)}>
             Try Again
           </Button>
         </Modal.Footer>

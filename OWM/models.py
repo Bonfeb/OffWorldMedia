@@ -42,7 +42,6 @@ class Service(models.Model):
 class Booking(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
-        ('confirmed', 'Confirmed'),
         ('completed', 'Completed'),
         ('canceled', 'Canceled'),
     ]
@@ -51,14 +50,28 @@ class Booking(models.Model):
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     event_date = models.DateField()
     event_time = models.TimeField()
+    event_location = models.CharField(max_length=100)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
-    
+    booked_at = models.DateTimeField(auto_now_add=True)
+
     class Meta:
         verbose_name = "Booking"
         verbose_name_plural = "Bookings"
 
     def __str__(self):
         return f"{self.user.username} - {self.service.name} ({self.event_date} {self.event_time})"
+
+#Cart Model
+class Cart(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    service = models.ForeignKey(Service, on_delete=models.CASCADE)
+    event_date = models.DateField(null=False)
+    event_location = models.CharField(max_length=255, null=False)
+    event_time = models.TimeField(null=False)
+    added_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.service.name} - {self.event_date}"
 
 # Contact Model
 class ContactUs(models.Model):

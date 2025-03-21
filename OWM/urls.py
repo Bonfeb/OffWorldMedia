@@ -6,25 +6,28 @@ urlpatterns = [
     # Auth Endpoints
     path('register/', RegisterView.as_view(), name='register'),
     path('login/', LoginView.as_view(), name='login'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('token/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),
     path('logout/', LogoutView.as_view(), name='logout'),
     #path('token/refresh/', CookieTokenRefreshView.as_view, name='token_refresh'),
 
     #Profile Endpoint
     path('profile/', UserProfileView.as_view(), name='profile'),
-    path('profile/update/', UserProfileView.as_view(), name='profile_udate'),
 
-    #Dashboard Endpoints
+    #Userdashboard Endpoints
     path('userdashboard/', UserDashboardView.as_view(), name="userdashboard"),
+    path('userdashboard/<int:pk>/', UserDashboardView.as_view(), name="userdashboard"),
 
     # Service Endpoints
     path('services/', ServiceListView.as_view(), name='service-list'),
-    path('services/<int:pk>/', ServiceDetailView.as_view(), name='service-detail'),
+    #path('services/<int:pk>/', ServiceDetailView.as_view(), name='service-detail'),
+    path('service-details/<int:pk>/', ServiceDetailView.as_view(), name='updateservice'),
 
-    # Booking Endpoints
-    path('bookings/', BookingListCreateView.as_view(), name='booking-list'),
-    path('bookings/<int:pk>/', BookingDetailView.as_view(), name='booking-detail'),
-
+    #handles listing all bookings
+    path('bookings/', BookingView.as_view(), name='booking-list'),
+    
+    #handles create, update and delete booking
+    path('booking/<int:pk>/', BookingView.as_view(), name='booking'),
+    
     # TeamMembers Endpoints
     path('team/', TeamListView.as_view(), name='team'),
 
@@ -32,5 +35,7 @@ urlpatterns = [
     path('reviews/', ReviewListView.as_view(), name='review-list'),
 
     #Contact Endpoints
-    path('contactus/', ContactUsView.as_view(), name='contactus')
+    path('contactus/', ContactUsView.as_view(), name='contactus'),
+
+    path('test/<int:pk>/', TestView.as_view(), name='test'),
 ]

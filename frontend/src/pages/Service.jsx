@@ -1,32 +1,50 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { motion } from "framer-motion";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDribbble } from "@fortawesome/free-brands-svg-icons";
-import { Container, Row, Col, Image, Button } from "react-bootstrap";
+import { Container, Row, Col, Image, Button, Alert } from "react-bootstrap";
 import "../assets/css/Service.css";
-import { Link } from "react-router-dom";
-
+import API from "../api";
+import { AuthContext } from "../context/AuthContext";
 function Service() {
-  const api_url = "http://127.0.0.1:8000/api";
+  const navigate = useNavigate();
 
+  const { isAuthenticated } = useContext(AuthContext)
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
+  const [authAlert, setAuthAlert] = useState(false);
+ 
 
   useEffect(() => {
-    axios
-      .get(`${api_url}/services`)
-      .then((response) => {
-        setServices(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
+    const fetchServices = async () => {
+      try {
+        const response = await API.get("/services/"); // Ensure this returns an array
+        console.log("Fetched services:", response.data); // Debugging
+        setServices(Array.isArray(response.data) ? response.data : []); // Ensure it's an array
+      } catch (error) {
+        console.error("Error fetching services:", error);
         setError("Error Loading Services");
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+  
+    fetchServices();
   }, []);
+  
 
+  const handleFillEventDetails = (serviceId) => {
+    if (!isAuthenticated) {
+      setAuthAlert(true);
+      navigate("/login");
+      return;
+    }
+  
+    // Redirect to FillEventDetails page
+    navigate(`/event-details/${serviceId}`);
+  };
+  
   if (loading) return <p>Loading services...</p>;
   if (error) return <p>{error}</p>;
 
@@ -59,6 +77,19 @@ function Service() {
             adipisci expedita at voluptas atque vitae autem.
           </strong>
         </p>
+
+        {showAlert && (
+          <Alert variant="success" className="text-center">
+            Service added to cart. Go to your dashboard to view and/or book it!
+          </Alert>
+        )}
+
+        {authAlert && (
+          <Alert variant="danger" className="text-center">
+            You must be logged in to add services to the cart.{" "}
+          </Alert>
+        )}
+
         <Row className="justify-content-center mt-4">
           {services.map((service) => (
             <Col
@@ -81,7 +112,9 @@ function Service() {
                 </div>
                 <h4 className="title">{service.name}</h4>
                 <p className="description">{service.description}</p>
-                <Button className="w-100 mt-2 bg-success" as={ Link } to="/booking">Book</Button>
+                <Button className="w-100 mt-2 bg-primary" onClick={() => handleFillEventDetails(service.id)}>
+                  Fill Event Details
+                </Button>
               </div>
             </Col>
           ))}

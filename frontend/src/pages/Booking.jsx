@@ -1,94 +1,151 @@
-import React, { useState, useEffect } from "react";
+// src/pages/UpdateBooking.js
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
 import {
   Form,
   Button,
   Container,
-  Alert,
   Spinner,
+  Alert,
   Modal,
 } from "react-bootstrap";
-import axios from "axios";
 import API from "../api";
 
 const Booking = () => {
-  const { serviceId } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
-  const [service, setService] = useState(null);
-  const [eventDate, setEventDate] = useState("");
-  const [eventTime, setEventTime] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showFailureModal, setShowFailureModal] = useState(false);
 
+  const [booking, setBooking] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [formData, setFormData] = useState({
+    service: "",
+    date: "",
+    time: "",
+    location: "",
+  });
+
   useEffect(() => {
+    console.log("Fetching:", `${API}/booking/${id}/`);
     axios
-      .get(`${API}services/${serviceId}/`)
+      .get(`${API}/booking/${id}/`)
       .then((response) => {
-        setService(response.data);
+        console.log("Booking Details:", response.data);
+        setBooking(response.data);
+        setFormData({
+          service: response.data.service,
+          date: response.data.date,
+          time: response.data.time,
+          location: response.data.location,
+        });
+        setLoading(false);
       })
-      .catch(() => {
-        setShowFailureModal(true);
-      })
-      .finally(() => {
+      .catch((error) => {
+        setError("Failed to load booking details.");
         setLoading(false);
       });
-  }, [serviceId]);
+  }, [id]);
 
   const handleBooking = async (e) => {
     e.preventDefault();
     setSubmitting(true);
 
+    if (!eventDate || !eventTime) {
+      alert("Please Select Both Date and Time for the Event!");
+      setSubmitting(false);
+      return;
+    }
+
     try {
-      await axios.post(
-        `${API}bookings/`,
-        { service: serviceId, event_date: eventDate, event_time: eventTime },
+      await API.post(
+        "bookings/",
+        {
+          service: serviceId,
+          event_date: eventDate,
+          event_time: eventTime,
+          price: service.price, // ✅ Send price but keep it read-only
+          description: service.description, // ✅ Send description but read-only
+        },
         { withCredentials: true }
       );
       setShowSuccessModal(true);
+    } catch (error) {
+      setShowFailureModal(true);
     } finally {
       setSubmitting(false);
     }
   };
 
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    axios
+      .put(`${API}/booking/${id}/`, formData)
+      .then(() => navigate("/bookings"))
+      .catch((error) => setError("Failed to update booking."));
+  };
+
+  if (loading) return <Spinner animation="border" />;
+  if (error) return <Alert variant="danger">{error}</Alert>;
+
   return (
-    <Container className="mt-5">
+    <Container>
       <h2>Book Service</h2>
-      {loading ? (
-        <Spinner animation="border" />
-      ) : (
-        <>
-          {service && (
-            <>
-              <h4>{service.name}</h4>
-              <p>{service.description}</p>
-              <Form onSubmit={handleBooking}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Select Date of the Event</Form.Label>
-                  <Form.Control
-                    type="date"
-                    value={eventDate}
-                    onChange={(e) => setEventDate(e.target.value)}
-                    required
-                  />
-                  <br />
-                  <Form.Label>Select Time of the Event</Form.Label>
-                  <Form.Control
-                    type="time"
-                    value={eventTime}
-                    onChange={(e) => setEventTime(e.target.value)}
-                    required
-                  />
-                </Form.Group>
-                <Button variant="success" type="submit" disabled={submitting}>
-                  {submitting ? "Booking..." : "Book Now"}
-                </Button>
-              </Form>
-            </>
-          )}
-        </>
-      )}
+      <Form onSubmit={handleSubmit}>
+        <Form.Group controlId="service">
+          <Form.Label>Service</Form.Label>
+          <Form.Control
+            type="text"
+            name="service"
+            value={formData.service}
+            onChange={handleChange}
+            required
+          />
+        </Form.Group>
+
+        <Form.Group controlId="date">
+          <Form.Label>Date</Form.Label>
+          <Form.Control
+            type="date"
+            name="date"
+            value={formData.date}
+            onChange={handleChange}
+            required
+          />
+        </Form.Group>
+
+        <Form.Group controlId="time">
+          <Form.Label>Time</Form.Label>
+          <Form.Control
+            type="time"
+            name="time"
+            value={formData.time}
+            onChange={handleChange}
+            required
+          />
+        </Form.Group>
+
+        <Form.Group controlId="location">
+          <Form.Label>Location</Form.Label>
+          <Form.Control
+            type="text"
+            name="location"
+            value={formData.location}
+            onChange={handleChange}
+            required
+          />
+        </Form.Group>
+
+        <Button variant="primary" type="submit" className="mt-3 btn-success">
+          Book Service
+        </Button>
+      </Form>
 
       {/* Success Modal */}
       <Modal

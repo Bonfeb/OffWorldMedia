@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CustomUser, Service, Booking, Review, ContactUs, TeamMember
+from .models import CustomUser, Service, Booking, Review, ContactUs, TeamMember, Cart
 
 # Register CustomUser
 @admin.register(CustomUser)
@@ -17,7 +17,7 @@ class ServiceAdmin(admin.ModelAdmin):
 # Register Booking
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
-    list_display = ('user', 'service', 'event_date', 'event_time', 'status')
+    list_display = ('user', 'service', 'event_date', 'event_location', 'status')
     list_filter = ('status', 'event_date')
     search_fields = ('user__username', 'service__name')
 
@@ -40,3 +40,11 @@ class TeamMemberAdmin(admin.ModelAdmin):
     list_display = ('name', 'role')
     list_filter = ('role',)
     search_fields = ('name', 'role')
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'service', 'event_date')
+    list_filter = ('user', 'service')
+    search_fields = ('user__username', 'service__name')
+
+

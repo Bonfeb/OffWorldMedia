@@ -1,12 +1,16 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../api";
+import { AuthContext } from "../context/AuthContext";
 import { Container, Card, Form, Button, Modal } from "react-bootstrap";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext); // Use login function from context
 
-  const [credentials, setCredentials] = useState({ username: "", password: "" });
+  const [credentials, setCredentials] = useState({
+    username: "",
+    password: "",
+  });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showFailureModal, setShowFailureModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -17,17 +21,23 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Login button clicked! Submitting form...");
+
     try {
-      await API.post("login/", credentials);
-      setShowSuccessModal(true)
+      await login(credentials); // Use context login function
+      setShowSuccessModal(true);
     } catch (error) {
-      setErrorMessage(error.response?.data || "Login failed. Please try again.");
+      console.error("Login error:", error.message);
+      setErrorMessage(error.message || "Login failed. Please try again.");
       setShowFailureModal(true);
     }
   };
 
   return (
-    <Container fluid className="d-flex justify-content-center align-items-center vh-100 login-container">
+    <Container
+      fluid
+      className="d-flex justify-content-center align-items-center vh-100 login-container"
+    >
       <Card className="p-4 shadow-lg login-card">
         <Card.Body>
           <h4 className="text-center mb-4">Login</h4>
@@ -70,13 +80,12 @@ const Login = () => {
         </Card.Body>
       </Card>
 
+      {/* Success Modal */}
       <Modal show={showSuccessModal} onHide={() => navigate("/userdashboard")} centered>
         <Modal.Header closeButton>
           <Modal.Title>Login Successful</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          Login Successfully!. You can now book.
-        </Modal.Body>
+        <Modal.Body>Login Successful! You can now book.</Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={() => navigate("/userdashboard")}>
             Continue
@@ -89,9 +98,7 @@ const Login = () => {
         <Modal.Header closeButton>
           <Modal.Title>Login Failed</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          {errorMessage}
-        </Modal.Body>
+        <Modal.Body>{errorMessage}</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowFailureModal(false)}>
             Try Again
